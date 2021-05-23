@@ -26,7 +26,7 @@ instance showX :: Show X where
 instance parseX :: Parse X where
   parse = fix $ \_ -> genericParse
 
-testCase :: forall a. Eq a => Show a => Parse a => a -> Effect Unit
+testCase :: forall a. Eq a => Show a => Read a => a -> Effect Unit
 testCase x = do
   log $ "Testing " <> show x
   log $ "Result: " <> show (readEither (show x) :: Either String a)
