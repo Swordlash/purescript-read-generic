@@ -23,8 +23,9 @@ import Data.Semigroup ((<>))
 import Data.Show (show)
 import Partial.Unsafe (unsafePartial)
 import Text.Parsing.Parser (Parser, fail, parseErrorMessage, runParser)
+import Text.Parsing.Parser.Combinators (try)
 import Text.Parsing.Parser.Language (emptyDef, haskellDef)
-import Text.Parsing.Parser.String (char)
+import Text.Parsing.Parser.String (char, string)
 import Text.Parsing.Parser.Token (GenTokenParser, makeTokenParser)
 
 -----------------------------------------------------
@@ -62,6 +63,9 @@ instance readNumber :: Parse Number where
             <|> pure identity
     f <- primaryParser.float
     pure $ sign f
+
+instance readBool :: Parse Boolean where
+  parse = try (string "true" *> pure true) <|> (string "false" *> pure false)
 
 foreign import _readDateTime :: forall a. String -> (Year -> Int -> Day -> Hour -> Minute -> Second -> Millisecond -> DateTime) -> (a -> Maybe a) -> Maybe a -> Maybe DateTime
 

@@ -15,7 +15,7 @@ import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Class.Console (log, logShow)
 
-data X = Y X | X Int Int Number
+data X = Y X Boolean | X Int Int Number
 
 derive instance eqX :: Eq X
 derive instance genX :: Generic X _
@@ -35,4 +35,4 @@ testCase x = do
 main :: Effect Unit
 main = do
   testCase (X 5 5 7.0)
-  testCase (Y (X 5 5 (-6.0)))
+  testCase (Y (X 5 5 (-6.0)) true)
