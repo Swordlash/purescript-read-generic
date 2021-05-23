@@ -12,8 +12,7 @@ to generate this file without the comments in this block.
 -}
 { name = "my-project"
 , dependencies =
-  [ "arrays"
-  , "assert"
+  [ "assert"
   , "bifunctors"
   , "console"
   , "control"
@@ -33,4 +32,6 @@ to generate this file without the comments in this block.
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
+, license = "MIT"
+, repository = "https://github.com/Swordlash/purescript-read-generic"
 }
