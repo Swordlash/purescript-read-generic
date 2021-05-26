@@ -8,10 +8,11 @@ module Data.Parse
 
 import Prelude
 
-import Control.Alt ((<|>))
+import Control.Alt (map, (<|>))
 import Control.Alternative (pure)
 import Control.Category ((<<<))
 import Control.Monad.Error.Class (class MonadError, throwError)
+import Data.Array (many)
 import Data.Bifunctor (lmap)
 import Data.DateTime (Date, DateTime(..), Day, Hour, Millisecond, Minute, Second, Time(..), Year, canonicalDate, date)
 import Data.Either (Either(..), hush, note)
@@ -21,12 +22,13 @@ import Data.Maybe (Maybe(..), fromJust)
 import Data.Number as N
 import Data.Semigroup ((<>))
 import Data.Show (show)
+import Data.String.CodeUnits (fromCharArray)
 import Partial.Unsafe (unsafePartial)
 import Text.Parsing.Parser (Parser, fail, parseErrorMessage, runParser)
 import Text.Parsing.Parser.Combinators (try)
 import Text.Parsing.Parser.Language (emptyDef, haskellDef)
 import Text.Parsing.Parser.String (char, string)
-import Text.Parsing.Parser.Token (GenTokenParser, makeTokenParser)
+import Text.Parsing.Parser.Token (GenTokenParser, digit, makeTokenParser)
 
 -----------------------------------------------------
 
@@ -77,7 +79,7 @@ dateTimeFromString str = _readDateTime str mkDateTime Just Nothing
 
 instance readDateTime :: Parse DateTime where
   parse = do
-    str <- primaryParser.stringLiteral
+    str <- map fromCharArray $ many (digit <|> char '.' <|> char 'T' <|> char 'Z' <|> char '-')
     case dateTimeFromString str of
       Nothing -> fail ("Cannot parse DateTime from " <> str)
       Just d -> pure d
