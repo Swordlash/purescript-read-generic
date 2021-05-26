@@ -79,7 +79,7 @@ dateTimeFromString str = _readDateTime str mkDateTime Just Nothing
 
 instance readDateTime :: Parse DateTime where
   parse = do
-    str <- map fromCharArray $ many (digit <|> char '.' <|> char 'T' <|> char 'Z' <|> char '-')
+    str <- map fromCharArray $ many (digit <|> char '.' <|> char 'T' <|> char 'Z' <|> char '-' <|> char ':')
     case dateTimeFromString str of
       Nothing -> fail ("Cannot parse DateTime from " <> str)
       Just d -> pure d
