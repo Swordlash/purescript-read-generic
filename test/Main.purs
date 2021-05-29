@@ -15,7 +15,7 @@ import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Class.Console (log, logShow)
 
-data X = Y X Boolean | X Int Int Number
+data X = Y X Boolean | X Int Int Number | Z | ZX
 
 derive instance eqX :: Eq X
 derive instance genX :: Generic X _
@@ -25,6 +25,7 @@ instance showX :: Show X where
 
 instance parseX :: Parse X where
   parse = fix $ \_ -> genericParse
+
 
 testCase :: forall a. Eq a => Show a => Read a => a -> Effect Unit
 testCase x = do
@@ -36,3 +37,5 @@ main :: Effect Unit
 main = do
   testCase (X 5 5 7.0)
   testCase (Y (X 5 5 (-6.0)) true)
+  testCase Z
+  testCase ZX

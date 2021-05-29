@@ -12,7 +12,8 @@ to generate this file without the comments in this block.
 -}
 { name = "read-generic"
 , dependencies =
-  [ "assert"
+  [ "arrays"
+  , "assert"
   , "bifunctors"
   , "console"
   , "control"

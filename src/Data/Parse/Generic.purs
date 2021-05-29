@@ -1,16 +1,15 @@
 module Data.Parse.Generic where
 
 import Control.Alt ((<|>))
-import Data.Bifunctor (lmap)
-import Data.Either (Either(..))
+import Control.Applicative (unless, ($>))
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), NoConstructors, Product(..), Sum(..), to)
-import Data.Parse (class Parse, parse, readEither)
-import Data.String.CodeUnits (fromCharArray)
+import Data.Parse (class Parse, parse, primaryParser)
 import Data.Symbol (class IsSymbol, reflectSymbol)
-import Prelude (bind, map, pure, ($), (<>))
-import Text.Parsing.Parser (Parser, fail, parseErrorMessage, runParser)
+import Data.Unit (Unit)
+import Prelude (bind, map, pure, ($), (<>), discard, (==))
+import Text.Parsing.Parser (Parser, fail)
 import Text.Parsing.Parser.Combinators (between, try, (<?>))
-import Text.Parsing.Parser.String (anyChar, string, whiteSpace)
+import Text.Parsing.Parser.String (string, whiteSpace)
 import Type.Proxy (Proxy(..))
 
 class GenericParse a where
@@ -36,18 +35,22 @@ instance genericParseProduct :: (GenericParse a, GenericParse b) => GenericParse
     pure (Product x y)
 
 instance genericParseConstructor :: IsSymbol name => GenericParse (Constructor name NoArguments) where
-  genericParse' = do
-    _ <- string (reflectSymbol (Proxy :: Proxy name))
-    pure (Constructor NoArguments)
+  genericParse' = parseConstr (Proxy :: Proxy name) $> (Constructor NoArguments)
 
 else instance genericParseConstructor' :: (IsSymbol name, GenericParse arg) => GenericParse (Constructor name arg) where
   genericParse' = between (string "(" <?> "opening bracket") (string ")" <?> "closing bracket") $ do
-    _ <- string label <?> ("type name " <> label)
+    parseConstr (Proxy :: Proxy name)
     _ <- whiteSpace
     arg <- genericParse' <?> "constructor argument"
     pure (Constructor arg)
-    where
-      label = reflectSymbol (Proxy :: Proxy name)
+
+parseConstr :: forall name. IsSymbol name => Proxy name -> Parser String Unit
+parseConstr lab = do
+  ident <- primaryParser.identifier <?> ("type name " <> label)
+  unless (ident == label) $ fail ("Unknown identifier: " <> ident <> ",  " <> label <> " expected.")
+
+  where label = reflectSymbol lab
+
 
 genericParse :: forall a rep. Generic a rep => GenericParse rep => Parser String a
 genericParse = map to genericParse'

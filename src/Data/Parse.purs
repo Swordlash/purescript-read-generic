@@ -4,6 +4,7 @@ module Data.Parse
   , readEither
   , readMaybe
   , read
+  , primaryParser
   ) where
 
 import Prelude
