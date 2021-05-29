@@ -14,6 +14,7 @@
         "output"
     ],
     "dependencies": {
+        "purescript-arrays": "^v6.0.1",
         "purescript-assert": "^v5.0.0",
         "purescript-bifunctors": "^v5.0.0",
         "purescript-console": "^v5.0.0",
